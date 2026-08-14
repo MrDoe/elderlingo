@@ -1,0 +1,8 @@
+node_modules/
+dist/
+server/data/
+server/public/audio/
+infra/voices/
+*.local
+.env
+.DS_Store

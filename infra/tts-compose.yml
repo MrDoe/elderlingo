@@ -1,0 +1,42 @@
+# Chatterbox TTS (multilingual) — local GPU text-to-speech for Elderlingo.
+#
+# Usage:
+#   1. Install the NVIDIA Container Toolkit on the host (nvidia-container-toolkit).
+#   2. Optional: drop a 10-30s Old English reference recording at ./voices/narrator_sample.wav
+#      (clean single-speaker speech, WAV preferred). The generate-audio script
+#      zero-shot-clones it to narrate with an authentic Old English accent.
+#   3. docker compose -f infra/tts-compose.yml up -d
+#   4. Verify: curl http://localhost:4123/health  →  GET /voices → /languages
+#
+# First startup downloads the multilingual Chatterbox model (~5 GB) into the
+# chatterbox-models volume; the first synthesis is also slow while weights load.
+# The model needs ~4 GB VRAM — stop `ollama` during seed runs to free the GPU.
+
+services:
+  chatterbox-tts-api:
+    image: travisvn/chatterbox-tts-api:latest
+    container_name: chatterbox-tts-api
+    restart: unless-stopped
+    ports:
+      - "4123:4123"
+    environment:
+      PORT: "4123"
+      USE_MULTILINGUAL_MODEL: "true"
+      DEVICE: "cuda"
+      EXAGGERATION: "0.4"
+      CFG_WEIGHT: "0.5"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./voices:/voices
+      - chatterbox-models:/models
+      - chatterbox-output:/output
+
+volumes:
+  chatterbox-models:
+  chatterbox-output:
