@@ -8,10 +8,14 @@
   ],
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:chat": "concurrently -n server,client,infra -c blue,green,yellow \"npm run dev -w server\" \"npm run dev -w client\" \"bash scripts/dev-infra.sh\"",
     "build": "npm run build -w client",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
     "test": "npm run test -w server",
-    "generate-audio": "tsx scripts/generate-audio.ts"
+    "generate-audio": "tsx scripts/generate-audio.ts",
+    "sync-dict": "tsx scripts/sync-dict.ts",
+    "check-tts": "tsx scripts/check-tts.ts",
+    "check-pronunciation": "tsx scripts/check-pronunciation.mts"
   },
   "devDependencies": {
     "concurrently": "^10.0.4",

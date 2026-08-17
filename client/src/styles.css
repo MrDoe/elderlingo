@@ -86,18 +86,6 @@ button {
   font-weight: 600;
 }
 
-.voice-select {
-  padding: 6px 8px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  background: var(--card);
-}
-
-.voice-select--big {
-  font-size: 1rem;
-  padding: 10px;
-}
-
 .nav-link {
   background: none;
   border: none;
@@ -680,6 +668,12 @@ button {
   75% { transform: rotate(-7deg) translateY(-7px); }
 }
 
+@keyframes mascot-talk {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  25% { transform: translateY(-3px) scaleY(1.1); }
+  60% { transform: translateY(2px) scaleY(0.94); }
+}
+
 @keyframes speech-pop {
   0% { opacity: 0; transform: translateY(6px) scale(0.6); }
   60% { opacity: 1; transform: translateY(0) scale(1.08); }
@@ -718,15 +712,26 @@ button {
 }
 
 .mascot {
-  position: fixed;
-  bottom: 20px;
-  right: 24px;
   z-index: 25;
   pointer-events: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
+  margin: 14px auto 0;
+}
+
+.mascot--lesson {
+  margin: 2px auto 14px;
+}
+
+.mascot--lesson .mascot-bird {
+  font-size: 4.6rem;
+}
+
+.mascot--lesson .mascot-speech {
+  font-size: 1.25rem;
+  padding: 7px 18px;
 }
 
 .mascot-bird {
@@ -734,6 +739,23 @@ button {
   font-size: 3.4rem;
   line-height: 1;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.18));
+}
+
+.mascot-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.mascot-btn:hover .mascot-bird {
+  transform: scale(1.1);
+}
+
+.mascot-btn:active .mascot-bird {
+  transform: scale(0.94);
 }
 
 .mascot--idle .mascot-bird {
@@ -750,6 +772,10 @@ button {
 
 .mascot--excited .mascot-bird {
   animation: mascot-dance 1.2s ease infinite;
+}
+
+.mascot--speaking .mascot-bird {
+  animation: mascot-talk 0.38s ease-in-out infinite;
 }
 
 .mascot-speech {

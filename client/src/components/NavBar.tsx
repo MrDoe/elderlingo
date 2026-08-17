@@ -4,7 +4,7 @@ import { useAuth } from '../App';
 import { isMuted, toggleMuted } from '../sfx';
 
 export function NavBar() {
-  const { user, logout, setVoice } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [muted, setMutedState] = useState(isMuted());
   if (!user) return null;
@@ -29,15 +29,9 @@ export function NavBar() {
         >
           {muted ? '🔇' : '🔊'}
         </button>
-        <select
-          className="voice-select"
-          value={user.voice}
-          onChange={(e) => void setVoice(e.target.value as 'en' | 'de')}
-          aria-label="Narrator voice"
-        >
-          <option value="en">English narrator</option>
-          <option value="de">Old English narrator</option>
-        </select>
+        <Link to="/chat" className="nav-link">
+          Chat
+        </Link>
         <Link to="/profile" className="nav-link">
           Profl
         </Link>

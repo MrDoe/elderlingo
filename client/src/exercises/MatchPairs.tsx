@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { sfx } from '../sfx';
-import type { MatchPairsExercise, Voice } from '../../../shared/types';
+import type { MatchPairsExercise } from '../../../shared/types';
 import { AudioButton } from '../components/AudioButton';
 
 interface Props {
   exercise: MatchPairsExercise;
-  voice: Voice;
   disabled: boolean;
   revealed: boolean;
   onSubmit: (correct: boolean) => void;
 }
 
-export function MatchPairs({ exercise, voice, disabled, revealed, onSubmit }: Props) {
+export function MatchPairs({ exercise, disabled, revealed, onSubmit }: Props) {
   const [leftSel, setLeftSel] = useState<string | null>(null);
   const [rightSel, setRightSel] = useState<string | null>(null);
   const [wrongPair, setWrongPair] = useState<{ left: string; right: string } | null>(null);
@@ -67,7 +66,7 @@ export function MatchPairs({ exercise, voice, disabled, revealed, onSubmit }: Pr
                   setRightSel(null);
                 }}
               >
-                <AudioButton entry={{ word: p.left, ipa: p.leftIpa, meaning: '', tts: { en: '', de: '' } }} voice={voice} slug={p.leftSlug} compact />
+                <AudioButton entry={{ word: p.left, ipa: p.leftIpa, meaning: '', tts: '' }} voice={p.voice} slug={p.leftSlug} compact />
                 <span className="word">{p.left}</span>
               </button>
             );

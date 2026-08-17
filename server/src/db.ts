@@ -20,7 +20,6 @@ db.exec(`
     xp INTEGER NOT NULL DEFAULT 0,
     streak INTEGER NOT NULL DEFAULT 0,
     last_activity_date TEXT,
-    voice TEXT NOT NULL DEFAULT 'en',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -34,6 +33,14 @@ db.exec(`
     PRIMARY KEY (user_id, lesson_id)
   );
 `);
+
+const userCols = db.prepare('PRAGMA table_info(users)').all() as { name: string }[];
+if (userCols.some((c) => c.name === 'chat_enabled')) {
+  db.exec('ALTER TABLE users DROP COLUMN chat_enabled');
+}
+if (userCols.some((c) => c.name === 'voice')) {
+  db.exec('ALTER TABLE users DROP COLUMN voice');
+}
 
 export function updateStreak(userId: number): number {
   const user = db.prepare('SELECT streak, last_activity_date FROM users WHERE id = ?').get(userId) as {

@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import type { Voice, WordEntry } from '../../../shared/types';
+import type { AudioVoice, WordEntry } from '../../../shared/types';
 import { entrySlug } from '../../../shared/utils';
 import { playAudio } from '../audio';
 
 interface AudioButtonProps {
   entry?: WordEntry;
-  voice: Voice;
+  voice?: AudioVoice;
   slug?: string;
   compact?: boolean;
   label?: string;
@@ -14,7 +14,7 @@ interface AudioButtonProps {
 export function AudioButton({ entry, voice, slug, compact, label }: AudioButtonProps) {
   const [busy, setBusy] = useState(false);
   const targetSlug = slug ?? (entry ? entrySlug(entry) : '');
-  const fallbackText = entry?.tts[voice];
+  const targetVoice = voice ?? entry?.voice ?? 'speaker';
 
   return (
     <button
@@ -23,7 +23,7 @@ export function AudioButton({ entry, voice, slug, compact, label }: AudioButtonP
       disabled={busy}
       onClick={async () => {
         setBusy(true);
-        await playAudio(voice, targetSlug, fallbackText);
+        await playAudio(targetVoice, targetSlug);
         setBusy(false);
       }}
       aria-label={label ?? 'Play audio'}

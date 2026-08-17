@@ -1,34 +1,44 @@
-import type { Voice } from '../../shared/types';
+import type { AudioVoice } from '../../shared/types';
 import { audioUrl } from './api';
 
 let cachedVoice: HTMLAudioElement | null = null;
+
+type PlayListener = (playing: boolean) => void;
+const playListeners = new Set<PlayListener>();
+
+export function onAudioPlay(listener: PlayListener): () => void {
+  playListeners.add(listener);
+  return () => {
+    playListeners.delete(listener);
+  };
+}
+
+function notifyPlaying(playing: boolean) {
+  for (const l of playListeners) l(playing);
+}
 
 export function stopAudio() {
   cachedVoice?.pause();
   cachedVoice = null;
 }
 
-function fallbackSpeak(text: string, voice: Voice) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  const lang = voice === 'de' ? 'de' : 'en';
-  const match = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang));
-  if (match) utterance.voice = match;
-  utterance.rate = 0.95;
-  window.speechSynthesis.speak(utterance);
-}
-
-export async function playAudio(voice: Voice, slug: string, fallbackText?: string): Promise<void> {
+export async function playAudio(voice: AudioVoice, slug: string): Promise<void> {
   stopAudio();
+  notifyPlaying(true);
   try {
     const res = await fetch(audioUrl(voice, slug), { signal: AbortSignal.timeout(4000) });
     if (!res.ok) throw new Error(`audio missing: ${res.status}`);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     cachedVoice = new Audio(url);
-    await cachedVoice.play();
+    await new Promise<void>((resolve) => {
+      cachedVoice!.onended = () => resolve();
+      cachedVoice!.onerror = () => resolve();
+      void cachedVoice!.play();
+    });
   } catch {
-    if (fallbackText) fallbackSpeak(fallbackText, voice);
+    console.warn(`No audio file for ${voice}/${slug} — run \`npm run generate-audio\``);
+  } finally {
+    notifyPlaying(false);
   }
 }

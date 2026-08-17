@@ -7,9 +7,9 @@ Learn Old English (early West Saxon, c. 900 AD) with a gamified web app: a guide
 - **Learning path** — two units (Wyrtruman *Roots*, Cwidas *Phrases*) with themed lessons that unlock as you progress
 - **Varied exercises** — multiple choice, listening comprehension, match pairs, word bank, and type-the-translation
 - **Authentic audio** — every word and phrase is spoken aloud:
-  - Unit 1 words are synthesized by a local [Chatterbox](https://github.com/resemble-ai/chatterbox) TTS container through two narrators: a built-in English voice and a zero-shot clone of a German narrator speaking German-orthography forms (German phonology approximates Old English better than English does)
+  - Unit 1 words are synthesized by a local [Chatterbox](https://github.com/resemble-ai/chatterbox) TTS container with a zero-shot clone of a German narrator speaking German-orthography forms (German phonology approximates Old English better than English does)
   - The 100 phrasebook sentences are cut from a single continuous Old English recording (`old_english_phrases.wav`) via whisper-timestamped boundary detection (`scripts/cut-phrases.py`)
-- **Accounts & progress** — register/login (session auth, bcrypt), per-lesson progress, XP and daily streaks, choice of narrator voice
+- **Accounts & progress** — register/login (session auth, bcrypt), per-lesson progress, XP and daily streaks
 - **No external assets** — all sound effects and animations are hand-rolled (WebAudio synth, canvas confetti)
 
 ## Tech stack
@@ -31,7 +31,7 @@ Create an account (local SQLite, no external services) and start with Wyrtruman.
 
 ## Audio
 
-Served audio lives in `server/public/audio/<voice>/<slug>.mp3` and is gitignored — generate it locally:
+Served audio lives in `server/public/audio/<voice>/<slug>.mp3` (voices: `de` for TTS word audio, `speaker` for the real-narrator phrase cuts) and is gitignored — generate the TTS part locally:
 
 ```bash
 docker compose -f infra/tts-compose.yml up -d   # Chatterbox TTS API on :4123 (needs NVIDIA GPU, ~4 GB VRAM)

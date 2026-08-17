@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import type { UserPublic, Voice } from '../../shared/types';
+import type { UserPublic } from '../../shared/types';
 import { api } from './api';
 import { NavBar } from './components/NavBar';
+import { ChatPage } from './pages/ChatPage';
 import { LessonPage } from './pages/LessonPage';
 import { LoginPage } from './pages/LoginPage';
 import { PathPage } from './pages/PathPage';
@@ -15,7 +16,6 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, name: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  setVoice: (voice: Voice) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -51,12 +51,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const setVoice = useCallback(async (voice: Voice) => {
-    setUser(await api.setVoice(voice));
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, setVoice }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -98,6 +94,15 @@ export default function App() {
             <Protected>
               <NavBar />
               <ProfilePage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <Protected>
+              <NavBar />
+              <ChatPage />
             </Protected>
           }
         />

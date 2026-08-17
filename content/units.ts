@@ -7,76 +7,75 @@ import {
 } from './builder';
 import { PHRASE_CATEGORIES, phrasesByCategory } from './phrases';
 
-// All IPA and tts_input values are hand-curated.
+// All IPA and tts values are hand-curated.
 // - ipa: phonetic transcription of the Old English word (early West Saxon reference pronunciation)
-// - tts.en: English-grapheme form fed to the English narrator (Chatterbox phonemizes English text)
-// - tts.de: German-orthography form fed to the German narrator, so German phonology produces
+// - tts: German-orthography form fed to the German narrator, so German phonology produces
 //   the closer-to-authentic OE sound (e.g. ċ → "ch" ich-laut, wīf → "weef" /viːf/)
 
 const greetings: WordEntry[] = [
-  { word: 'hāl', ipa: 'hɑːl', meaning: 'healthy, whole', tts: { en: 'hahl', de: 'haahl' } },
-  { word: 'ġesund', ipa: 'jeˈsund', meaning: 'well, sound', tts: { en: 'yeh-soond', de: 'jesunt' } },
-  { word: 'swīþe', ipa: 'ˈswiː.ðe', meaning: 'very', tts: { en: 'swee-theh', de: 'svee-theh' } },
-  { word: 'lēof', ipa: 'leːof', meaning: 'dear, beloved', tts: { en: 'leh-off', de: 'leh-ohf' } },
-  { word: 'cwic', ipa: 'kwik', meaning: 'alive, living', tts: { en: 'kwik', de: 'kwick' } },
-  { word: 'god morgen', ipa: 'ɡod ˈmor.jen', meaning: 'good morning', tts: { en: 'god mor-yen', de: 'gott morjen' } },
-  { word: 'wes hāl', ipa: 'wes hɑːl', meaning: 'be well! (farewell)', tts: { en: 'wess hahl', de: 'wess haahl' } },
-  { word: 'þancie þē', ipa: 'ˈθɑn.tʃi.e θeː', meaning: 'thank you', tts: { en: 'thahn-chee-eh thee', de: 'thankieh thee' } },
+  { word: 'hāl', ipa: 'hɑːl', meaning: 'healthy, whole', tts: 'haahl' },
+  { word: 'ġesund', ipa: 'jeˈsund', meaning: 'well, sound', tts: 'jesund' },
+  { word: 'swīþe', ipa: 'ˈswiː.ðe', meaning: 'very', tts: 'ßwie-the' },
+  { word: 'lēof', ipa: 'leːof', meaning: 'dear, beloved', tts: 'léof' },
+  { word: 'cwic', ipa: 'kwik', meaning: 'alive, living', tts: 'kwick' },
+  { word: 'god morgen', ipa: 'ɡod ˈmor.jen', meaning: 'good morning', tts: 'god morjen' },
+  { word: 'wes hāl', ipa: 'wes hɑːl', meaning: 'be well! (farewell)', tts: 'wess haal' },
+  { word: 'þancie þē', ipa: 'ˈθɑn.tʃi.e θeː', meaning: 'thank you', tts: 'thantschie theh' },
 ];
 
 const pronouns: WordEntry[] = [
-  { word: 'iċ', ipa: 'itʃ', meaning: 'I', tts: { en: 'itch', de: 'ich' } },
-  { word: 'þū', ipa: 'θuː', meaning: 'you (sg.)', tts: { en: 'thoo', de: 'thoo' } },
-  { word: 'hē', ipa: 'heː', meaning: 'he', tts: { en: 'heh', de: 'hee' } },
-  { word: 'hēo', ipa: 'heːo', meaning: 'she', tts: { en: 'heh-oh', de: 'heh-oh' } },
-  { word: 'hit', ipa: 'hit', meaning: 'it', tts: { en: 'hit', de: 'hitt' } },
-  { word: 'wē', ipa: 'weː', meaning: 'we', tts: { en: 'weh', de: 'weh' } },
-  { word: 'ġē', ipa: 'jeː', meaning: 'you (pl.)', tts: { en: 'yeh', de: 'jee' } },
-  { word: 'hīe', ipa: 'hiːe', meaning: 'they', tts: { en: 'hee-eh', de: 'hee-eh' } },
+  { word: 'iċ', ipa: 'itʃ', meaning: 'I', tts: 'itch' },
+  { word: 'þū', ipa: 'θuː', meaning: 'you (sg.)', tts: 'thuh' },
+  { word: 'hē', ipa: 'heː', meaning: 'he', tts: 'heh' },
+  { word: 'hēo', ipa: 'heːo', meaning: 'she', tts: 'heh-oh' },
+  { word: 'hit', ipa: 'hit', meaning: 'it', tts: 'hitt' },
+  { word: 'wē', ipa: 'weː', meaning: 'we', tts: 'weh' },
+  { word: 'ġē', ipa: 'jeː', meaning: 'you (pl.)', tts: 'jee' },
+  { word: 'hīe', ipa: 'hiːe', meaning: 'they', tts: 'hii-e' },
 ];
 
 const numbers: WordEntry[] = [
-  { word: 'ān', ipa: 'ɑːn', meaning: 'one', tts: { en: 'ahn', de: 'ahn' } },
-  { word: 'twā', ipa: 'twɑː', meaning: 'two', tts: { en: 'twah', de: 'tvah' } },
-  { word: 'þrīe', ipa: 'θriːe', meaning: 'three', tts: { en: 'three-eh', de: 'three-eh' } },
-  { word: 'fēower', ipa: 'ˈfeːo.wer', meaning: 'four', tts: { en: 'feh-oh-ver', de: 'feh-oh-ver' } },
-  { word: 'fīf', ipa: 'fiːf', meaning: 'five', tts: { en: 'feef', de: 'feef' } },
-  { word: 'siex', ipa: 'siːks', meaning: 'six', tts: { en: 'see-ecks', de: 'see-ecks' } },
-  { word: 'seofon', ipa: 'ˈseo.von', meaning: 'seven', tts: { en: 'seh-oh-von', de: 'seh-oh-fon' } },
-  { word: 'eahta', ipa: 'ˈæɑx.tɑ', meaning: 'eight', tts: { en: 'ay-ah-tah', de: 'eh-ah-tah' } },
-  { word: 'nigon', ipa: 'ˈni.ɣon', meaning: 'nine', tts: { en: 'nee-gon', de: 'nee-gon' } },
-  { word: 'tīen', ipa: 'tiːen', meaning: 'ten', tts: { en: 'tee-en', de: 'tee-en' } },
+  { word: 'ān', ipa: 'ɑːn', meaning: 'one', tts: 'ahn' },
+  { word: 'twā', ipa: 'twɑː', meaning: 'two', tts: 'twah' },
+  { word: 'þrīe', ipa: 'θriːe', meaning: 'three', tts: 'thrii-eh' },
+  { word: 'fēower', ipa: 'ˈfeːo.wer', meaning: 'four', tts: 'feeowa' },
+  { word: 'fīf', ipa: 'fiːf', meaning: 'five', tts: 'fiif' },
+  { word: 'siex', ipa: 'siːks', meaning: 'six', tts: 'siix' },
+  { word: 'seofon', ipa: 'ˈseo.von', meaning: 'seven', tts: 'seh-oh-fon' },
+  { word: 'eahta', ipa: 'ˈæɑx.tɑ', meaning: 'eight', tts: 'ea-tha' },
+  { word: 'nigon', ipa: 'ˈni.ɣon', meaning: 'nine', tts: 'nih-jon' },
+  { word: 'tīen', ipa: 'tiːen', meaning: 'ten', tts: 'tiehn' },
 ];
 
 const family: WordEntry[] = [
-  { word: 'fæder', ipa: 'ˈfæ.der', meaning: 'father', tts: { en: 'fah-der', de: 'fäder' } },
-  { word: 'mōdor', ipa: 'ˈmoː.dor', meaning: 'mother', tts: { en: 'moh-dor', de: 'moh-dor' } },
-  { word: 'brōþor', ipa: 'ˈbroː.θor', meaning: 'brother', tts: { en: 'broh-thor', de: 'broh-thor' } },
-  { word: 'sweostor', ipa: 'ˈsweo.stor', meaning: 'sister', tts: { en: 'sweh-os-tor', de: 'sveh-oss-tor' } },
-  { word: 'sunu', ipa: 'ˈsu.nu', meaning: 'son', tts: { en: 'soo-noo', de: 'soo-noo' } },
-  { word: 'dohtor', ipa: 'ˈdox.tor', meaning: 'daughter', tts: { en: 'doch-tor', de: 'dochtor' } },
-  { word: 'wīf', ipa: 'wiːf', meaning: 'woman, wife', tts: { en: 'weef', de: 'weef' } },
-  { word: 'mæġ', ipa: 'mæj', meaning: 'relative, kinsman', tts: { en: 'may-yeh', de: 'mäj' } },
+  { word: 'fæder', ipa: 'ˈfæ.der', meaning: 'father', tts: 'fäder' },
+  { word: 'mōdor', ipa: 'ˈmoː.dor', meaning: 'mother', tts: 'mohdor' },
+  { word: 'brōþor', ipa: 'ˈbroː.θor', meaning: 'brother', tts: 'brohthor' },
+  { word: 'sweostor', ipa: 'ˈsweo.stor', meaning: 'sister', tts: 'sweosstor' },
+  { word: 'sunu', ipa: 'ˈsu.nu', meaning: 'son', tts: 'suhnuh' },
+  { word: 'dohtor', ipa: 'ˈdox.tor', meaning: 'daughter', tts: 'dochtor' },
+  { word: 'wīf', ipa: 'wiːf', meaning: 'woman, wife', tts: 'wiif' },
+  { word: 'mæġ', ipa: 'mæj', meaning: 'relative, kinsman', tts: 'mäj' },
 ];
 
 const toBe: WordEntry[] = [
-  { word: 'iċ eom', ipa: 'itʃ eom', meaning: 'I am', tts: { en: 'itch eh-om', de: 'ich eh-om' } },
-  { word: 'þū eart', ipa: 'θuː æɑrt', meaning: 'you are', tts: { en: 'thoo eh-art', de: 'thoo eh-art' } },
-  { word: 'hē is', ipa: 'heː is', meaning: 'he is', tts: { en: 'heh is', de: 'hee iss' } },
-  { word: 'hēo is', ipa: 'heːo is', meaning: 'she is', tts: { en: 'heh-oh is', de: 'heh-oh iss' } },
-  { word: 'hit is', ipa: 'hit is', meaning: 'it is', tts: { en: 'hit iss', de: 'hitt iss' } },
-  { word: 'wē sindon', ipa: 'weː ˈsin.don', meaning: 'we are', tts: { en: 'weh sin-don', de: 'weh zin-don' } },
-  { word: 'ġē sindon', ipa: 'jeː ˈsin.don', meaning: 'you are (pl.)', tts: { en: 'yeh sin-don', de: 'jee zin-don' } },
-  { word: 'hīe sindon', ipa: 'hiːe ˈsin.don', meaning: 'they are', tts: { en: 'hee-eh sin-don', de: 'hee-eh zin-don' } },
+  { word: 'iċ eom', ipa: 'itʃ eom', meaning: 'I am', tts: 'itch eom' },
+  { word: 'þū eart', ipa: 'θuː æɑrt', meaning: 'you are', tts: 'thuu ärrt' },
+  { word: 'hē is', ipa: 'heː is', meaning: 'he is', tts: 'heh iss' },
+  { word: 'hēo is', ipa: 'heːo is', meaning: 'she is', tts: 'heh-oh iss' },
+  { word: 'hit is', ipa: 'hit is', meaning: 'it is', tts: 'hitt iss' },
+  { word: 'wē sindon', ipa: 'weː ˈsin.don', meaning: 'we are', tts: 'weh sindon' },
+  { word: 'ġē sindon', ipa: 'jeː ˈsin.don', meaning: 'you are (pl.)', tts: 'jeh sindon' },
+  { word: 'hīe sindon', ipa: 'hiːe ˈsin.don', meaning: 'they are', tts: 'hii-e sindon' },
 ];
 
 const sentences: WordEntry[] = [
-  { word: 'iċ eom hāl', ipa: 'itʃ eom hɑːl', meaning: 'I am healthy', tts: { en: 'itch eh-om hahl', de: 'ich eh-om haahl' } },
-  { word: 'þū eart lēof', ipa: 'θuː æɑrt leːof', meaning: 'you are dear', tts: { en: 'thoo eh-art leh-off', de: 'thoo eh-art leh-ohf' } },
-  { word: 'hē is swīþe ġesund', ipa: 'heː is ˈswiː.ðe jeˈsund', meaning: 'he is very healthy', tts: { en: 'heh iss swee-theh yeh-soond', de: 'hee iss svee-theh jesunt' } },
-  { word: 'hēo is cwic', ipa: 'heːo is kwik', meaning: 'she is alive', tts: { en: 'heh-oh iss kwik', de: 'heh-oh iss kwick' } },
-  { word: 'wē sindon ġesunde', ipa: 'weː ˈsin.don jeˈsun.de', meaning: 'we are healthy', tts: { en: 'weh sin-don yeh-soon-deh', de: 'weh zin-don jesun-deh' } },
-  { word: 'hīe sindon hāle', ipa: 'hiːe ˈsin.don ˈhɑː.le', meaning: 'they are healthy', tts: { en: 'hee-eh sin-don hah-leh', de: 'hee-eh zin-don haah-leh' } },
+  { word: 'iċ eom hāl', ipa: 'itʃ eom hɑːl', meaning: 'I am healthy', tts: 'itch eh-om hahl' },
+  { word: 'þū eart lēof', ipa: 'θuː æɑrt leːof', meaning: 'you are dear', tts: 'thuu ärrt leh-of' },
+  { word: 'hē is swīþe ġesund', ipa: 'heː is ˈswiː.ðe jeˈsund', meaning: 'he is very healthy', tts: 'heh iss ßwie-the jesund' },
+  { word: 'hēo is cwic', ipa: 'heːo is kwik', meaning: 'she is alive', tts: 'heh-oh iss kwick' },
+  { word: 'wē sindon ġesunde', ipa: 'weː ˈsin.don jeˈsun.de', meaning: 'we are healthy', tts: 'weh sindon jesunde' },
+  { word: 'hīe sindon hāle', ipa: 'hiːe ˈsin.don ˈhɑː.le', meaning: 'they are healthy', tts: 'hih-eh sindon haale' },
 ];
 
 export const units: Unit[] = [

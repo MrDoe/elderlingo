@@ -3,6 +3,10 @@ dist/
 server/data/
 server/public/audio/
 infra/voices/
+infra/asr/.venv/
+scripts/.venv/
+scripts/.phonetics/
+infra/models/
 *.local
 .env
 .DS_Store

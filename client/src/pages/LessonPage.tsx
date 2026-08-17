@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { Lesson, LessonCompleteResult } from '../../../shared/types';
 import { HEARTS_PER_LESSON, XP_PER_CORRECT } from '../../../shared/types';
-import { useAuth } from '../App';
+import { entrySlug } from '../../../shared/utils';
 import { api, ApiError } from '../api';
-import { stopAudio } from '../audio';
+import { onAudioPlay, playAudio, stopAudio } from '../audio';
 import { Confetti } from '../components/Confetti';
 import { HeartBar } from '../components/HeartBar';
 import { Mascot, type MascotMood } from '../components/Mascot';
@@ -39,7 +39,6 @@ function CountUp({ value }: { value: number }) {
 export function LessonPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [phase, setPhase] = useState<Phase>('playing');
@@ -51,6 +50,9 @@ export function LessonPage() {
   const [result, setResult] = useState<LessonCompleteResult | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [celebrate, setCelebrate] = useState(0);
+  const [speaking, setSpeaking] = useState(false);
+
+  useEffect(() => onAudioPlay(setSpeaking), []);
 
   useEffect(() => {
     if (!id) return;
@@ -204,6 +206,13 @@ export function LessonPage() {
   const exercise = lesson.exercises[index];
   const mascotMood: MascotMood = feedback ? (feedback.kind === 'correct' ? 'happy' : 'sad') : 'idle';
   const mascotKey = feedback ? feedback.seq : `idle-${index}`;
+  const entry = 'entry' in exercise ? exercise.entry : undefined;
+  const speakText = entry?.word;
+  const speak = () => {
+    if (!entry) return;
+    const slug = exercise.type === 'listening' ? exercise.slug : entrySlug(entry);
+    void playAudio(entry.voice ?? 'speaker', slug);
+  };
 
   return (
     <main className="lesson">
@@ -215,10 +224,17 @@ export function LessonPage() {
         <ProgressBar current={index + (revealed ? 1 : 0)} total={lesson.exercises.length} />
         <HeartBar hearts={hearts} />
       </div>
+      <Mascot
+        mood={mascotMood}
+        text={speakText}
+        speaking={speaking}
+        onClick={speakText ? speak : undefined}
+        variant="lesson"
+        key={mascotKey}
+      />
       <div className={`lesson-card${feedback ? ` lesson-card--${feedback.kind}` : ''}`} key={exercise.id}>
         <ExerciseCard
           exercise={exercise}
-          voice={user?.voice ?? 'en'}
           disabled={false}
           revealed={revealed}
           onSubmit={handleSubmit}
@@ -229,7 +245,6 @@ export function LessonPage() {
           +{XP_PER_CORRECT} XP
         </div>
       )}
-      <Mascot mood={mascotMood} key={mascotKey} />
       {revealed && (
         <div className="lesson-bottom">
           <button

@@ -1,4 +1,4 @@
-import type { ApiUnit, AudioStatus, Lesson, LessonCompleteRequest, LessonCompleteResult, UserPublic } from '../../shared/types';
+import type { AudioVoice, ApiUnit, AudioStatus, Lesson, LessonCompleteRequest, LessonCompleteResult, UserPublic } from '../../shared/types';
 
 export class ApiError extends Error {
   status: number;
@@ -33,11 +33,6 @@ export const api = {
     }),
   logout: () => request<{ ok: boolean }>('/api/auth/logout', { method: 'POST' }),
   me: () => request<UserPublic>('/api/auth/me'),
-  setVoice: (voice: 'en' | 'de') =>
-    request<UserPublic>('/api/auth/voice', {
-      method: 'POST',
-      body: JSON.stringify({ voice }),
-    }),
   units: () => request<ApiUnit[]>('/api/units'),
   lesson: (id: string) => request<Lesson>(`/api/lessons/${id}`),
   completeLesson: (id: string, payload: LessonCompleteRequest) =>
@@ -48,6 +43,6 @@ export const api = {
   audioStatus: () => request<AudioStatus>('/api/audio/status'),
 };
 
-export function audioUrl(voice: 'en' | 'de', slug: string): string {
+export function audioUrl(voice: AudioVoice, slug: string): string {
   return `/api/audio/${voice}/${slug}.mp3`;
 }

@@ -1,8 +1,9 @@
-import type { UserPublic, Voice } from '../../shared/types';
+import type { ChatTurn, UserPublic } from '../../shared/types';
 
 declare module 'express-session' {
   interface SessionData {
     userId?: number;
+    turns?: ChatTurn[];
   }
 }
 
@@ -14,7 +15,6 @@ export type UserRow = {
   xp: number;
   streak: number;
   last_activity_date: string | null;
-  voice: Voice;
 };
 
 export function toUserPublic(row: UserRow): UserPublic {
@@ -24,6 +24,5 @@ export function toUserPublic(row: UserRow): UserPublic {
     name: row.name,
     xp: row.xp,
     streak: row.streak,
-    voice: row.voice,
   };
 }

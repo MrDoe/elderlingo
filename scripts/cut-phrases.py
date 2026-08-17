@@ -24,7 +24,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "old_english_phrases.wav"
-OUT_DIR = ROOT / "server" / "public" / "audio" / "en"
+OUT_DIR = ROOT / "server" / "public" / "audio" / "speaker"
 WORDS = Path("/tmp/opencode/words.json")
 WHISPER = Path("/tmp/opencode/whisper-venv/bin/python")
 

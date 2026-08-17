@@ -6,12 +6,18 @@ import authRouter from './routes/auth.js';
 import unitsRouter from './routes/units.js';
 import lessonsRouter from './routes/lessons.js';
 import audioRouter from './routes/audio.js';
+import chatRouter from './routes/chat.js';
+import sttRouter from './routes/stt.js';
+import ttsRouter from './routes/tts.js';
+import statusRouter from './routes/status.js';
+import promptRouter from './routes/prompt.js';
+import { requireAuth } from './middleware.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function createApp() {
   const app = express();
-  app.use(express.json());
+  app.use(express.json({ limit: '2mb' }));
   app.use(
     session({
       secret: process.env.SESSION_SECRET ?? 'elderlingo-dev-secret',
@@ -25,6 +31,11 @@ export function createApp() {
   app.use('/api/units', unitsRouter);
   app.use('/api/lessons', lessonsRouter);
   app.use('/api/audio', audioRouter);
+  app.use('/api/chat', requireAuth, chatRouter);
+  app.use('/api/stt', requireAuth, sttRouter);
+  app.use('/api/tts', requireAuth, ttsRouter);
+  app.use('/api/status', requireAuth, statusRouter);
+  app.use('/api/prompt', requireAuth, promptRouter);
 
   const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
   app.use(express.static(clientDist));

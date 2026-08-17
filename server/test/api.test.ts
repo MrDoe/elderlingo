@@ -30,7 +30,9 @@ describe('auth', () => {
       password: 'saxewulf',
     });
     expect(res.status).toBe(201);
-    expect(res.body).toMatchObject({ email: 'wulf@heorot.test', xp: 0, streak: 0, voice: 'en' });
+    expect(res.body).toMatchObject({ email: 'wulf@heorot.test', xp: 0, streak: 0 });
+    expect(res.body).not.toHaveProperty('voice');
+    expect(res.body).not.toHaveProperty('chatEnabled');
   });
 
   it('rejects duplicate emails', async () => {
@@ -69,12 +71,9 @@ describe('auth', () => {
     expect(res.status).toBe(401);
   });
 
-  it('updates the voice preference', async () => {
+  it('no longer offers a voice preference', async () => {
     const res = await agent.post('/api/auth/voice').send({ voice: 'de' });
-    expect(res.status).toBe(200);
-    expect(res.body.voice).toBe('de');
-    const bad = await agent.post('/api/auth/voice').send({ voice: 'fr' });
-    expect(bad.status).toBe(400);
+    expect(res.status).toBe(404);
   });
 
   it('logs out', async () => {
@@ -192,18 +191,23 @@ describe('audio', () => {
   });
 
   it('404s for ungenerated audio', async () => {
-    const res = await listener.get('/api/audio/en/definitely-missing.mp3');
+    const res = await listener.get('/api/audio/de/definitely-missing.mp3');
+    expect(res.status).toBe(404);
+  });
+
+  it('404s for unknown voices', async () => {
+    const res = await listener.get('/api/audio/en/fixture-audio.mp3');
     expect(res.status).toBe(404);
   });
 
   it('serves generated audio as audio/mpeg', async () => {
     const { audioDir } = await import('../src/routes/audio.js');
-    fs.mkdirSync(path.join(audioDir, 'en'), { recursive: true });
-    fs.writeFileSync(path.join(audioDir, 'en', 'fixture-audio.mp3'), Buffer.from([0x49, 0x44, 0x33, 0x00]));
-    const res = await listener.get('/api/audio/en/fixture-audio.mp3');
+    fs.mkdirSync(path.join(audioDir, 'de'), { recursive: true });
+    fs.writeFileSync(path.join(audioDir, 'de', 'fixture-audio.mp3'), Buffer.from([0x49, 0x44, 0x33, 0x00]));
+    const res = await listener.get('/api/audio/de/fixture-audio.mp3');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toBe('audio/mpeg');
     expect(res.body).toEqual(Buffer.from([0x49, 0x44, 0x33, 0x00]));
-    fs.rmSync(path.join(audioDir, 'en', 'fixture-audio.mp3'));
+    fs.rmSync(path.join(audioDir, 'de', 'fixture-audio.mp3'));
   });
 });

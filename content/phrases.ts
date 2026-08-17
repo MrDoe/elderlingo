@@ -22,7 +22,7 @@ export const PHRASE_CATEGORIES: PhraseCategory[] = [
 
 export const PHRASES: PhraseEntry[] = [
   // Grētunga — Greetings
-  { oe: 'Wēs hāl.', en: 'Hello!', category: 'greetings' },
+  { oe: 'Wēs hāl.', en: 'Hello!', category: 'greetings', tts: 'wess haal' },
   { oe: 'Wesaþ hāle.', en: 'Hello! (to several people)', category: 'greetings' },
   { oe: 'Gōdne morgen.', en: 'Good morning.', category: 'greetings' },
   { oe: 'Gōdne ǣfen.', en: 'Good evening.', category: 'greetings' },
@@ -43,7 +43,7 @@ export const PHRASES: PhraseEntry[] = [
   { oe: 'Hū eald eart þū?', en: 'How old are you?', category: 'introductions' },
   { oe: 'Ic eom geong.', en: 'I am young.', category: 'introductions' },
   { oe: 'Hū gǣþ hit?', en: 'How is it going?', category: 'introductions' },
-  { oe: 'Hit gǣþ wel.', en: 'It is going well.', category: 'introductions' },
+  { oe: 'Hit gǣþ wel.', en: 'It is going well.', category: 'introductions', tts: 'hitt jääth well' },
 
   // Gebǣru — Feelings
   { oe: 'Ic eom wērig.', en: 'I am tired.', category: 'feelings' },
@@ -67,19 +67,19 @@ export const PHRASES: PhraseEntry[] = [
   { oe: 'Þæt wīf is scīene.', en: 'The woman is beautiful.', category: 'family' },
   { oe: 'Hwǣr is se cyning?', en: 'Where is the king?', category: 'family' },
   { oe: 'Sēo cwēn is wīs.', en: 'The queen is wise.', category: 'family' },
-  { oe: 'Se scop singþ.', en: 'The poet sings.', category: 'family' },
+  { oe: 'Se scop singþ.', en: 'The poet sings.', category: 'family', tts: 'ße skopp ßingth' },
 
   // Weder — Weather & nature
   { oe: 'Hit rīnþ.', en: 'It is raining.', category: 'weather' },
-  { oe: 'Sēo sunne scīnþ.', en: 'The sun shines.', category: 'weather' },
-  { oe: 'Se snāw feallþ.', en: 'The snow falls.', category: 'weather' },
+  { oe: 'Sēo sunne scīnþ.', en: 'The sun shines.', category: 'weather', tts: 'ßeo ßunne schiinth' },
+  { oe: 'Se snāw feallþ.', en: 'The snow falls.', category: 'weather', tts: 'ße ßnaaw feallth' },
   { oe: 'Se wind blǣwþ.', en: 'The wind blows.', category: 'weather' },
-  { oe: 'Hit is ceald.', en: 'It is cold.', category: 'weather' },
+  { oe: 'Hit is ceald.', en: 'It is cold.', category: 'weather', tts: 'hitt is keald' },
   { oe: 'Hit is wearm.', en: 'It is warm.', category: 'weather' },
   { oe: 'Se dæg is beorht.', en: 'The day is bright.', category: 'weather' },
   { oe: 'Sēo niht is þīestre.', en: 'The night is dark.', category: 'weather' },
-  { oe: 'Se wudu is grēne.', en: 'The forest is green.', category: 'weather' },
-  { oe: 'Þæt trēow is eald.', en: 'The tree is old.', category: 'weather' },
+  { oe: 'Se wudu is grēne.', en: 'The forest is green.', category: 'weather', tts: 'ße wudu iß grehne' },
+  { oe: 'Þæt trēow is eald.', en: 'The tree is old.', category: 'weather', tts: 'thät tréo iß eald' },
 
   // Dēor — Animals
   { oe: 'Se hund is gōd.', en: 'The dog is good.', category: 'animals' },
@@ -100,7 +100,7 @@ export const PHRASES: PhraseEntry[] = [
   { oe: 'Ic ne mæg þē understandan.', en: 'I cannot understand you.', category: 'language' },
   { oe: 'Ic gā tō hūse.', en: 'I am going home.', category: 'language' },
   { oe: 'Ic ete hlāf.', en: 'I eat bread.', category: 'language' },
-  { oe: 'Ic drince wæter.', en: 'I drink water.', category: 'language' },
+  { oe: 'Ic drince wæter.', en: 'I drink water.', category: 'language', tts: 'itsch drinke wäter' },
   { oe: 'Hē drincþ medu.', en: 'He drinks mead.', category: 'language' },
   { oe: 'Wē etaþ flæsc.', en: 'We eat meat.', category: 'language' },
   { oe: 'Ic slǣpe wel.', en: 'I sleep well.', category: 'language' },
@@ -138,8 +138,8 @@ export const PHRASES: PhraseEntry[] = [
   { oe: 'Ic sēce mīnne frēond.', en: 'I seek my friend.', category: 'travel' },
   { oe: 'Hwelc dæg is tōdæg?', en: 'Which day is today?', category: 'travel' },
   { oe: 'Tōdæg is Frīgedæg.', en: 'Today is Friday.', category: 'travel' },
-  { oe: 'Ic lufie gōdne sang.', en: 'I love a good song.', category: 'travel' },
-  { oe: 'Ic geseah sumne mann.', en: 'I saw a man.', category: 'travel' },
+  { oe: 'Ic lufie gōdne sang.', en: 'I love a good song.', category: 'travel', tts: 'itsch lufiöh gohdne ßang' },
+  { oe: 'Ic geseah sumne mann.', en: 'I saw a man.', category: 'travel', tts: 'itsch jesääh ßumne mann' },
 ];
 
 export function phraseSlug(phrase: PhraseEntry): string {

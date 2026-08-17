@@ -1,15 +1,15 @@
-// Pre-generates all lesson audio through the local Chatterbox container (GPU).
+// Pre-generates missing lesson audio through the local Chatterbox container (GPU).
 //
-// Pipeline:
+// Pipeline (identical to chat, /api/tts → ttsInput()):
 //   1. Health-checks http://localhost:4123 (set CHATTERBOX_URL to override).
-//   2. For each curated word/phrase in content/, synthesizes audio:
-//        - voice "en":  POST /v1/audio/speech            (built-in narrator)
-//        - voice "de":  POST /v1/audio/speech/upload     (zero-shot clone of
-//          infra/voices/narrator_sample.wav, a 10-30s Old English reference
-//          recording; the narrator then speaks the curated German-orthography
-//          tts forms with an authentic Old English accent)
-//   3. Chatterbox always returns WAV, so each clip is converted to MP3 with
-//      ffmpeg and written to server/public/audio/<voice>/<slug>.mp3.
+//   2. For each lesson entry, transliterates the Old English text to German
+//      phonetic script (shared/oedict.ts — same rules chat uses).
+//   3. Synthesizes with the Old English narrator: POST /v1/audio/speech/upload
+//      (zero-shot clone of infra/voices/narrator_sample.wav; the narrator then
+//      pronounces the German-orthography input with German phonology).
+//   4. Chatterbox returns WAV; each clip is converted to MP3 with ffmpeg and
+//      written to server/public/audio/speaker/<slug>.mp3 (idempotent — existing
+//      files, including real narrator phrase cuts, are never overwritten).
 //
 // Usage:
 //   npm run generate-audio             # generate what is missing (idempotent)
@@ -21,16 +21,16 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { allEntries } from '../content/units.js';
-import { entrySlug } from '../shared/utils.js';
-import type { Voice } from '../shared/types';
+import { transliterate } from '../shared/oedict.js';
+import { slugify } from '../shared/utils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TTS_URL = process.env.CHATTERBOX_URL ?? 'http://localhost:4123';
-const OUT_ROOT = path.join(__dirname, '..', 'server', 'public', 'audio');
+const OUT_DIR = process.argv.includes('--out')
+  ? path.join(__dirname, '..', 'server', 'public', 'audio', 'speaker', process.argv[process.argv.indexOf('--out') + 1])
+  : path.join(__dirname, '..', 'server', 'public', 'audio', 'speaker');
 const GERMAN_SAMPLE = path.join(__dirname, '..', 'infra', 'voices', 'narrator_sample.wav');
 const FORCE = process.argv.includes('--force');
-
-const VOICES: Voice[] = ['en', 'de'];
 
 async function chatterboxOnline(): Promise<boolean> {
   try {
@@ -39,17 +39,6 @@ async function chatterboxOnline(): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-// Default narrator: OpenAI-compatible JSON endpoint, always returns WAV.
-async function synthDefault(text: string): Promise<Buffer> {
-  const res = await fetch(`${TTS_URL}/v1/audio/speech`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'tts-1', input: text }),
-  });
-  if (!res.ok) throw new Error(`chatterbox error ${res.status}: ${await res.text()}`);
-  return Buffer.from(await res.arrayBuffer());
 }
 
 // Zero-shot clone: upload the reference recording along with each request.
@@ -87,36 +76,38 @@ async function main() {
   console.log(`✓ Chatterbox online at ${TTS_URL}`);
 
   const hasSample = fs.existsSync(GERMAN_SAMPLE);
-  if (!hasSample) console.log('ℹ  no infra/voices/narrator_sample.wav found — skipping Old English narrator');
-  const voices = VOICES.filter((v) => v !== 'de' || hasSample);
-
-  const entries = allEntries();
-  const tasks: { voice: Voice; slug: string; text: string }[] = [];
-  for (const entry of entries) {
-    const slug = entrySlug(entry);
-    for (const voice of voices) {
-      const out = path.join(OUT_ROOT, voice, `${slug}.mp3`);
-      if (!FORCE && fs.existsSync(out)) continue;
-      tasks.push({ voice, slug, text: entry.tts[voice] });
-    }
+  if (!hasSample) {
+    console.error(`✗ no ${GERMAN_SAMPLE} — the narrator reference recording is missing`);
+    process.exit(1);
   }
 
-  console.log(`Generating ${tasks.length} audio files (${entries.length} entries × ${voices.length} voices)…`);
+  const tasks: { slug: string; text: string }[] = [];
+  const only = process.argv.includes('--slugs')
+    ? new Set(process.argv.slice(process.argv.indexOf('--slugs') + 1).filter((a) => !a.startsWith('--')))
+    : null;
+  for (const entry of allEntries()) {
+    const slug = slugify(entry.word);
+    if (only && !only.has(slug)) continue;
+    const out = path.join(OUT_DIR, `${slug}.mp3`);
+    if (!FORCE && fs.existsSync(out)) continue;
+    tasks.push({ slug, text: entry.tts || transliterate(entry.word) });
+  }
+
+  console.log(`Generating ${tasks.length} audio files with the chat pipeline (OE → Lautschrift → narrator)…`);
   let ok = 0;
   for (const task of tasks) {
     try {
-      const wav = task.voice === 'de' ? await synthWithSample(task.text, GERMAN_SAMPLE) : await synthDefault(task.text);
-      const outDir = path.join(OUT_ROOT, task.voice);
-      fs.mkdirSync(outDir, { recursive: true });
-      const outFile = path.join(outDir, `${task.slug}.mp3`);
+      const wav = await synthWithSample(task.text, GERMAN_SAMPLE);
+      fs.mkdirSync(OUT_DIR, { recursive: true });
+      const outFile = path.join(OUT_DIR, `${task.slug}.mp3`);
       wavToMp3(wav, outFile);
       ok++;
-      console.log(`  ✓ [${task.voice}] ${task.text} → ${task.slug}.mp3`);
+      console.log(`  ✓ ${task.slug}  (${task.text})`);
     } catch (err) {
-      console.error(`  ✗ [${task.voice}] ${task.text}: ${err instanceof Error ? err.message : err}`);
+      console.error(`  ✗ ${task.slug}: ${err instanceof Error ? err.message : err}`);
     }
   }
-  console.log(`Done: ${ok}/${tasks.length} files generated in ${OUT_ROOT}`);
+  console.log(`Done: ${ok}/${tasks.length} files generated in ${OUT_DIR}`);
 }
 
 main().catch((err) => {

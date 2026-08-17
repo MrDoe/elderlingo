@@ -25,6 +25,10 @@ services:
       DEVICE: "cuda"
       EXAGGERATION: "0.4"
       CFG_WEIGHT: "0.5"
+      # Keep HF downloads in the persistent chatterbox-models volume (the
+      # default is /home/app/.cache inside the container's writable layer,
+      # which would be lost on `docker compose down`).
+      HF_HOME: /models
     deploy:
       resources:
         reservations:

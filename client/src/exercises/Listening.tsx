@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { sfx } from '../sfx';
-import type { ListeningExercise, Voice } from '../../../shared/types';
+import type { ListeningExercise } from '../../../shared/types';
 import { playAudio } from '../audio';
 import { AudioButton } from '../components/AudioButton';
 
 interface Props {
   exercise: ListeningExercise;
-  voice: Voice;
   disabled: boolean;
   revealed: boolean;
   onSubmit: (correct: boolean) => void;
 }
 
-export function Listening({ exercise, voice, disabled, revealed, onSubmit }: Props) {
+export function Listening({ exercise, disabled, revealed, onSubmit }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const [playedOnce, setPlayedOnce] = useState(false);
   const locked = disabled || revealed;
@@ -21,15 +20,15 @@ export function Listening({ exercise, voice, disabled, revealed, onSubmit }: Pro
   useEffect(() => {
     if (autoplayed.current) return;
     autoplayed.current = true;
-    void playAudio(voice, exercise.slug, exercise.entry.tts[voice]).then(() => setPlayedOnce(true));
-  }, [voice, exercise]);
+    void playAudio(exercise.entry.voice ?? 'speaker', exercise.slug).then(() => setPlayedOnce(true));
+  }, [exercise]);
 
   return (
     <div className="exercise">
       <div className="exercise-prompt">
         <p>{exercise.prompt}</p>
         <div className="word-card word-card--audio">
-          <AudioButton entry={exercise.entry} voice={voice} slug={exercise.slug} />
+          <AudioButton entry={exercise.entry} slug={exercise.slug} />
           <span className="muted">{playedOnce ? 'Tap to replay' : 'Playing…'}</span>
         </div>
       </div>

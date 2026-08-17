@@ -1,20 +1,27 @@
-import { useState } from 'react';
-import type { TypeTranslationExercise, Voice } from '../../../shared/types';
-import { answersMatch } from '../../../shared/utils';
+import { useEffect, useRef, useState } from 'react';
+import type { TypeTranslationExercise } from '../../../shared/types';
+import { answersMatch, entrySlug } from '../../../shared/utils';
+import { playAudio } from '../audio';
 import { AudioButton } from '../components/AudioButton';
 
 interface Props {
   exercise: TypeTranslationExercise;
-  voice: Voice;
   disabled: boolean;
   revealed: boolean;
   onSubmit: (correct: boolean) => void;
 }
 
-export function TypeTranslation({ exercise, voice, disabled, revealed, onSubmit }: Props) {
+export function TypeTranslation({ exercise, disabled, revealed, onSubmit }: Props) {
   const [value, setValue] = useState('');
   const [checked, setChecked] = useState(false);
   const locked = disabled || revealed;
+  const autoplayed = useRef(false);
+
+  useEffect(() => {
+    if (autoplayed.current || exercise.direction !== 'oe-en') return;
+    autoplayed.current = true;
+    void playAudio(exercise.entry.voice ?? 'speaker', entrySlug(exercise.entry));
+  }, [exercise]);
 
   const submit = () => {
     if (checked || locked) return;
@@ -32,7 +39,7 @@ export function TypeTranslation({ exercise, voice, disabled, revealed, onSubmit 
         <p>{exercise.prompt}</p>
         {showWord && (
           <div className="word-card">
-            <AudioButton entry={exercise.entry} voice={voice} />
+            <AudioButton entry={exercise.entry} />
             <span className="word">{exercise.entry.word}</span>
             {showIpa && <span className="ipa">{exercise.entry.ipa}</span>}
           </div>

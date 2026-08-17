@@ -105,6 +105,7 @@ function matchPairs(entries: WordEntry[], rnd: () => number): MatchPairsExercise
         leftIpa: e.ipa,
         leftSlug: slugify(e.word),
         right: e.meaning,
+        voice: e.voice ?? 'speaker',
       })),
       rnd,
     ),
@@ -162,7 +163,8 @@ export function buildPhrasebookLesson(phrases: PhraseEntry[], lessonId: string):
     word: p.oe,
     ipa: '',
     meaning: p.en,
-    tts: { en: '', de: '' },
+    tts: p.tts ?? '',
+    voice: 'speaker',
   }));
   const rnd = mulberry32(lessonId.length * 15485863 + entries.length * 211);
   const generators: Generator[] = [listening, mcEnToOe, wordBank, typeOeToEn];

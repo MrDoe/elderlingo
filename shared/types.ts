@@ -1,16 +1,18 @@
-export type Voice = 'en' | 'de';
+export type AudioVoice = 'de' | 'speaker';
 
 export interface WordEntry {
   word: string;
   ipa: string;
   meaning: string;
-  tts: Record<Voice, string>;
+  tts: string;
+  voice?: AudioVoice;
 }
 
 export interface PhraseEntry {
   oe: string;
   en: string;
   category: string;
+  tts?: string;
 }
 
 export interface ExerciseBase {
@@ -41,7 +43,7 @@ export interface WordBankExercise extends ExerciseBase {
 
 export interface MatchPairsExercise extends ExerciseBase {
   type: 'match-pairs';
-  pairs: { left: string; leftIpa: string; leftSlug: string; right: string }[];
+  pairs: { left: string; leftIpa: string; leftSlug: string; right: string; voice: AudioVoice }[];
 }
 
 export interface ListeningExercise extends ExerciseBase {
@@ -100,7 +102,6 @@ export interface UserPublic {
   name: string;
   xp: number;
   streak: number;
-  voice: Voice;
 }
 
 export interface LessonCompleteRequest {
@@ -119,10 +120,45 @@ export interface LessonCompleteResult {
 export interface AudioStatus {
   chatterboxOnline: boolean;
   cachedFiles: number;
-  voices: Voice[];
 }
 
 export const HEARTS_PER_LESSON = 3;
 export const XP_PER_CORRECT = 10;
 export const XP_PER_CORRECT_FAILED = 5;
 export const PASS_RATIO = 0.6;
+
+export type ChatRole = 'user' | 'bot';
+
+export interface ChatMessage {
+  role: ChatRole;
+  transcript?: string;
+  oe?: string;
+  gloss?: string;
+}
+
+export interface ChatTurn extends ChatMessage {
+  id: string;
+  ts: number;
+}
+
+export interface ChatReply {
+  oe: string;
+  gloss: string;
+}
+
+export interface SttResult {
+  transcript: string;
+  oe?: string;
+}
+
+export interface ServiceStatus {
+  whisperOnline: boolean;
+  chatterboxOnline: boolean;
+  ollamaOnline: boolean;
+}
+
+export interface PromptInfo {
+  prompt: string;
+  default: string;
+  custom: boolean;
+}

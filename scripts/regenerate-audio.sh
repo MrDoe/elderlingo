@@ -3,9 +3,8 @@
 # Chatterbox container and resume until all files are generated.
 set -u
 cd "$(dirname "$0")/.."
-MISSING_EN=$(ls server/public/audio/en 2>/dev/null | wc -l)
-MISSING_DE=$(ls server/public/audio/de 2>/dev/null | wc -l)
-echo "existing: en=$MISSING_EN de=$MISSING_DE"
+MISSING_SPEAKER=$(ls server/public/audio/speaker 2>/dev/null | wc -l)
+echo "existing: speaker=$MISSING_SPEAKER"
 
 for round in $(seq 1 40); do
   OUT=$(npm run generate-audio 2>&1 | grep -vE "^npm notice")

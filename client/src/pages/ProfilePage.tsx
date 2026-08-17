@@ -5,7 +5,7 @@ import { useAuth } from '../App';
 import { api } from '../api';
 
 export function ProfilePage() {
-  const { user, setVoice } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState<{ units: ApiUnit[] } | null>(null);
   const [audio, setAudio] = useState<AudioStatus | null>(null);
 
@@ -39,20 +39,13 @@ export function ProfilePage() {
       </div>
 
       <div className="profile-card">
-        <h2>Narrator voice</h2>
+        <h2>Chat</h2>
         <p>
-          The English narrator is the default. The Old English narrator is a clone of a
-          real Old English speaker, trained from your reference recording
-          (<code>infra/voices/narrator_sample.wav</code>).
+          Talk Old English with Se Lēodwita, the chatbot. Needs the local
+          services (whisper, ollama, Chatterbox) running — start them with{' '}
+          <code>npm run dev:chat</code> or <code>bash scripts/dev-infra.sh</code>. The page
+          still works without them; answers just fail politely.
         </p>
-        <select
-          className="voice-select voice-select--big"
-          value={user.voice}
-          onChange={(e) => void setVoice(e.target.value as 'en' | 'de')}
-        >
-          <option value="en">🇬🇧 English narrator</option>
-          <option value="de">🏰 Old English narrator</option>
-        </select>
       </div>
 
       {audio && (
@@ -65,9 +58,6 @@ export function ProfilePage() {
             </li>
             <li>
               Pre-generated audio files: <strong>{audio.cachedFiles}</strong>
-            </li>
-            <li>
-              Voices on server: <strong>{audio.voices.join(', ') || 'none'}</strong>
             </li>
           </ul>
           <p className="muted">
