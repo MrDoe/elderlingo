@@ -1,6 +1,6 @@
 # Elderlingo
 
-Learn Old English (early West Saxon, c. 900 AD) with a gamified web app: a guided lesson path, five exercise types, and a 100-phrase phrasebook spoken by a real narrator.
+Learn Old English (early West Saxon, c. 900 AD) with a gamified web app: a guided lesson path, five exercise types, and a 100-phrase phrasebook spoken by an AI generated narrator.
 
 ## Features
 
